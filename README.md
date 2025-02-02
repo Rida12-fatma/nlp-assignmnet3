@@ -1,30 +1,43 @@
 # nlp-assignmnet3
 
-English to Urdu Translator Web App
-This repository contains a Python Flask web application that translates English sentences to Urdu using a pre-trained deep learning model. The model is built using TensorFlow/Keras and is trained on a dataset of aligned English and Urdu sentences.
+Translation API
 
-Project Structure
-The project is organized as follows:
+This is a simple Flask-based API that translates English text into Italian using the Helsinki-NLP MarianMT model.
 
-app.py: The Flask web application code, including model loading, text preprocessing, and translation functions. Translator.ipynb: Jupyter Notebook containing the entire time series analysis pipeline. templates/index.html: HTML template for the web app's user interface.
+Requirements
 
-Data Analysis and Preprocessing
-The Translator.ipynb notebook starts with data analysis and preprocessing. It reads English and Urdu sentences from the text files, removes newline characters, and calculates word counts.
+Ensure you have the following dependencies installed:
+pip install torch transformers datasets flask
+How to Run
 
-Word Cloud Visualization
-The notebook uses Word Cloud to visualize the most common words in the English sentences.
+Clone this repository or download the script.
 
-Tokenization and Padding
-The English and Urdu sentences are tokenized and padded to create input sequences for the machine learning model.
+Install dependencies using the command above.
 
-Model Training
-The notebook uses a Bidirectional GRU model to train on the tokenized English and Urdu sentences. It compiles the model, trains it on the data, and evaluates its performance.
+Run the application:
+python app.py
+The server will start at http://0.0.0.0:5000/.
+API Endpoint
 
-Model Evaluation
-The trained model is evaluated on the test set, and accuracy and loss graphs are plotted.
+Translate Text
 
-Saving the Model
-The trained model is saved as english_to_urdu_translator_final.h5 for later use.
+Endpoint:
+POST /translate
+Request Body (JSON):
+{
+    "text": "Hello, how are you?"
+}
+Response Json
+{
+    "translated_text": "Ciao, come stai?"
+}
+Notes
 
-Contributions
-Contributions to the project are welcome. If you find any bugs or have ideas for improvements, feel free to open an issue or submit a pull request.
+The translation model used is Helsinki-NLP/opus-mt-en-it.
+
+You can modify the model to support other language pairs.
+
+License
+
+This project is released under the MIT License.
+
