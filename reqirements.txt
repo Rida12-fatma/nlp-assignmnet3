@@ -6,7 +6,7 @@ scikit-learn
 datasets
 flask
 transformers==4.27.1
-streamlit==1.20.0
+streamlit
 seaborn
 matplotlib
 
