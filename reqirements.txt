@@ -1,10 +1,10 @@
+torch
 pandas
 numpy
 nltk
 scikit-learn
 datasets
 flask
-torch
 transformers==4.27.1
 streamlit==1.20.0
 seaborn
