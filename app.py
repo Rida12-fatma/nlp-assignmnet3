@@ -1,51 +1,49 @@
-import tensorflow as tf
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from flask import Flask, render_template, request
-import pickle
+import pandas as pd
 import numpy as np
-app = Flask(__name__)
+import matplotlib.pyplot as plt
+import seaborn as sns
+import nltk
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-# Load your model here using TensorFlow/Keras
-translator_model = tf.keras.models.load_model('english_to_urdu_translator_final.h5')
+# Load data
+df = pd.read_csv('path/to/your/data.csv')
 
-def logits_to_text(logits, tokenizer):
-    index_to_words = {id: word for word, id in tokenizer.word_index.items()}
-    index_to_words[0] = '<PAD>'
-    return ' '.join([index_to_words[prediction] for prediction in np.argmax(logits, 1)])
+# Preprocess data
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+stop_words = set(stopwords.words('english'))
 
-def load_tokenizer(filename):
-    with open(filename, 'rb') as file:
-        tokenizer = pickle.load(file)
-    return tokenizer
+def preprocess_text(text):
+    # Add your text preprocessing steps here
+    return text
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+df['text'] = df['text'].apply(preprocess_text)
 
-@app.route('/translate', methods=['POST'])
-def translate():
-    text = [request.form['text']]
-    translated_text = translate_text(text)
-    print(translated_text)
-    return render_template('index.html', translation=translated_text)
+# Vectorize text
+vectorizer = CountVectorizer(stop_words=stop_words)
+X = vectorizer.fit_transform(df['text'])
+y = df['label']  # Assuming 'label' is your target column
 
-def translate_text(text):
-    # Preprocess the input text (if required)
-    # For example, if your model expects tokenized input, tokenize the text
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Load the Urdu tokenizer
-    english_tokenizer = load_tokenizer('english_tokenizer.pkl')
-    urdu_tokenizer = load_tokenizer('urdu_tokenizer.pkl')
-    
-    text = english_tokenizer.texts_to_sequences(text)
-    text = pad_sequences(text, maxlen=10,padding = 'post')  # Pad the sequence to match the expected input shape
-    text = np.array(text)
+# Train model
+model = MultinomialNB()
+model.fit(X_train, y_train)
 
-    # Translate the text using your loaded model
-    prediction = translator_model.predict(text,)
-    translated_text = logits_to_text(prediction[0], urdu_tokenizer)
+# Evaluate model
+y_pred = model.predict(X_test)
+print('Accuracy:', accuracy_score(y_test, y_pred))
+print('Confusion Matrix:\n', confusion_matrix(y_test, y_pred))
+print('Classification Report:\n', classification_report(y_test, y_pred))
 
-    return translated_text.replace('<PAD>','')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# Plot results
+plt.figure(figsize=(10, 6))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.show()
