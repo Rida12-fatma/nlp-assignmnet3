@@ -4,3 +4,7 @@ matplotlib
 seaborn
 nltk
 scikit-learn
+torch
+transformers
+datasets
+flask
